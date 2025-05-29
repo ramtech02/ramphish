@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Call Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/c4c45dfab4.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #1a202c;
+            color: #e2e8f0;
+            font-family: 'Arial', sans-serif;
+        }
+        video, canvas {
+            border-radius: 8px;
+        }
+        #capturedImage {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+    <div class="container mx-auto p-4 max-w-4xl">
+        <h1 class="text-3xl font-bold text-center mb-6">Video Call Interface</h1>
+        <p class="text-center mb-4 text-lg">This app requires your explicit permission to access your webcam. No data is stored or sent without your consent.</p>
+        
+        <div class="flex flex-col md:flex-row gap-4">
+            <!-- Webcam Section -->
+            <div class="flex-1 bg-gray-800 p-4 rounded-lg shadow-lg">
+                <video id="video" autoplay playsinline class="w-full h-auto"></video>
+                <div class="flex justify-center gap-4 mt-4">
+                    <button onclick="startWebcam()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">Allow Webcam</button>
+                    <button onclick="capturePhoto()" disabled id="captureBtn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded">Capture Photo</button>
+                </div>
+                <canvas id="canvas" class="hidden"></canvas>
+                <img id="capturedImage" class="hidden mt-4" alt="Captured Photo">
+                <a id="downloadLink" class="hidden mt-4 inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded" download="photo.png">Download Photo</a>
+            </div>
+            
+            <!-- Links Section -->
+            <div class="flex-1 bg-gray-800 p-4 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4">Connect with Us</h2>
+                <div class="flex flex-col gap-4">
+                    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded text-center">Watch on YouTube</a>
+                    <a href="https://www.instagram.com/explore" target="_blank" class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-4 rounded text-center">Follow on Instagram</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Bar -->
+        <div class="fixed bottom-0 left-0 w-full bg-gray-900 p-4 flex justify-center gap-8">
+            <div class="flex flex-col items-center">
+                <i class="fas fa-microphone text-2xl mb-2"></i>
+                <span class="text-sm">Mute</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <i class="fas fa-video text-2xl mb-2"></i>
+                <span class="text-sm">Stop Video</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <i class="fas fa-shield-alt text-2xl mb-2"></i>
+                <span class="text-sm">Security</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <i class="fas fa-users text-2xl mb-2"></i>
+                <span class="text-sm">Participants</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <i class="fas fa-plus-square text-2xl mb-2 text-green-400"></i>
+                <span class="text-sm">Share Content</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <i class="fas fa-comments text-2xl mb-2"></i>
+                <span class="text-sm">Chat</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <i class="fas fa-record-vinyl text-2xl mb-2"></i>
+                <span class="text-sm">Record</span>
+            </div>
+            <button class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">End</button>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const capturedImage = document.getElementById('capturedImage');
+        const captureBtn = document.getElementById('captureBtn');
+        const downloadLink = document.getElementById('downloadLink');
+
+        async function startWebcam() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = stream;
+                captureBtn.disabled = false;
+            } catch (err) {
+                alert('Error accessing webcam: ' + err.message + '\nPlease ensure you have a webcam and have granted permission.');
+            }
+        }
+
+        function capturePhoto() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+            capturedImage.src = imageData;
+            capturedImage.classList.remove('hidden');
+            downloadLink.href = imageData;
+            downloadLink.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
